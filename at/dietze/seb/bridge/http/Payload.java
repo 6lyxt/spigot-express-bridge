@@ -1,24 +1,24 @@
 package at.dietze.seb.bridge.http;
 
 import org.jetbrains.annotations.Contract;
-import java.util.HashMap;
+import java.util.Map;
 
 public class Payload {
 
-    private HashMap params;
+    private Map params;
 
     /**
      * @param params
      */
     @Contract(pure = true)
-    public Payload(HashMap params) {
+    public Payload(Map params) {
         this.params = params;
     }
 
     /**
      * @return params value of this class
      */
-    public HashMap getParams() {
+    public Map getParams() {
         return params;
     }
 }

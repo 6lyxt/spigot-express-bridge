@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p> Controller class to manage webhook operations </p>
@@ -15,30 +16,28 @@ import java.util.HashMap;
 public class Controller {
 
     /**
-     * @param p
+     * @param p Player object
      * @throws IOException
      * @deprecated not finished yet
      */
     public static void updateWebHook(Player p) throws IOException {
         HTTPConnector httpConnector = new HTTPConnector("https://url.com/", 8080);
-        Payload payload = new Payload(getPositionMap());
-
-        // TODO: Finish this
+        Payload payload = new Payload(getPositionMap(p));
+        httpConnector.post(payload);
     }
 
     /**
-     * @return
+     * @return Map of player Positions
      * @deprecated not finished yet
      */
     @Contract(pure = true)
-    public static @NotNull HashMap getPositionMap() {
-        String posX;
-        String posY;
-        String posZ;
+    public static @NotNull Map<Integer, Integer> getPositionMap(Player p) {
+        HashMap<Integer, Integer> curr = new HashMap<>();
+        curr.put(0, p.getLocation().getBlockX());
+        curr.put(1, p.getLocation().getBlockY());
+        curr.put(2, p.getLocation().getBlockZ());
 
-        // TODO: Finish this
-
-        return new HashMap();
+        return curr;
     }
 
 

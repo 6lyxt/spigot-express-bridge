@@ -2,19 +2,15 @@ package at.dietze.seb.bridge.http;
 
 import org.jetbrains.annotations.Contract;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
+import java.io.*;
+import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 /**
  * <p>Manages http operations</p>
  * @see <a href="https://github.com/6lyxt/SpigotExpressBridge/#httphelper">Documentation</a>
+ * TODO: This needs some cleanup!
  */
 public class HTTPConnector {
 
@@ -25,6 +21,7 @@ public class HTTPConnector {
 
     /**
      * <p>80 for http, 443 for https, 8000 for express testing apps</p>
+     * <h1> Unused ATM! </h1>
      */
     private int port;
 
@@ -41,6 +38,7 @@ public class HTTPConnector {
     /**
      * @param payload
      * @return body of requested URL
+     * @throws IOException
      */
     public String get(Payload payload) throws IOException {
 
@@ -52,6 +50,43 @@ public class HTTPConnector {
 
         if(con.getResponseCode() != 200) {
             return con.getResponseMessage() + " : " + con.getResponseCode();
+        }
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+        String inputLine;
+        StringBuilder content = new StringBuilder();
+        while ((inputLine = in.readLine()) != null) {
+            content.append(inputLine);
+        }
+        in.close();
+        con.disconnect();
+
+        return String.valueOf(content);
+    }
+
+    /**
+     * @param payload
+     * @return response of api
+     * @throws IOException
+     */
+    public String post(Payload payload) throws IOException {
+        URL url = new URL(this.url);
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        con.setRequestMethod("POST");
+        con.setDoOutput(true);
+
+        String sj = getParamsString(payload.getParams());
+
+        byte[] out = sj.getBytes(StandardCharsets.UTF_8);
+        int length = out.length;
+
+        // TODO: Migrate to JSON
+
+        con.setFixedLengthStreamingMode(length);
+        con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+        con.connect();
+        try(OutputStream os = con.getOutputStream()) {
+            os.write(out);
         }
 
         BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
@@ -85,4 +120,5 @@ public class HTTPConnector {
         String resultString = result.toString();
         return resultString.length() > 0 ? resultString.substring(0, resultString.length() - 1) : resultString;
     }
+
 }

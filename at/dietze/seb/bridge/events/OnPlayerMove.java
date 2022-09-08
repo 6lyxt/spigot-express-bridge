@@ -11,6 +11,7 @@ public class OnPlayerMove implements Listener {
 
     @EventHandler
     public void onMove(PlayerMoveEvent e) {
+        // TODO: implement region check
         try {
             Controller.updateWebHook(e.getPlayer());
         } catch (IOException ex) {
